@@ -1,1 +1,1 @@
-# comp-math-similarity-search
+# Similarity checker for competition math problems
