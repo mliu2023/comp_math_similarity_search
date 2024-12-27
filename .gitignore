@@ -1,0 +1,6 @@
+.env
+.DS_Store
+*.pyc
+app/faiss_index/data/faiss_index.bin
+app/faiss_index/data/metadata.json
+app/faiss_index/data/sources/*
