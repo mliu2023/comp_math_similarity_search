@@ -6,6 +6,8 @@ import numpy as np
 import httpx
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+import datetime
+import re
 
 def add_source(url, source):
     urls = load_urls()
@@ -19,15 +21,26 @@ def add_source(url, source):
     return False
 
 def add_hmmt_nov_sources():
-    for year in range(2011, 2030):
+    for year in range(2011, datetime.datetime.now().year + 1):
+        print(f"Adding HMMT November {year}...")
         success = False
         for round in ["gen", "gen1", "gen2", "thm", "guts", "team"]:
             result = add_source(f"https://hmmt-archive.s3.amazonaws.com/tournaments/{year}/nov/{round}/solutions.pdf", 
                                 f"HMMT November {year}")
-            if result: 
+            if result:
                 success = True
-        if not success:
-            break
+        print("Success" if success else "Failed")
+
+def add_hmmt_feb_sources():
+    for year in range(2012, datetime.datetime.now().year + 1):
+        print(f"Adding HMMT February {year}...")
+        success = False
+        for round in ["alg", "algnt", "comb", "geo", "guts"]:
+            result = add_source(f"https://hmmt-archive.s3.amazonaws.com/tournaments/{year}/feb/{round}/solutions.pdf", 
+                                f"HMMT February {year}")
+            if result:
+                success = True
+        print("Success" if success else "Failed")
 
 def add_pumac_sources():
     base_url = "https://jason-shi-f9dm.squarespace.com/archives#directory"
@@ -53,7 +66,19 @@ def add_pumac_sources():
             url = urljoin(base_url, href)
             urls.append(url)
         names.append(name)
-    return urls
+    year = 0
+    for url in urls:
+        match = re.search(r"20\d{2}", url)
+        if match:
+            if int(match.group()) != year:
+                year = int(match.group())
+                print(f"Adding PUMaC {year}...")
+            add_source(url, f"PUMaC {match.group()}")
+        else:
+            if year != 2018:
+                year = 2018
+                print(f"Adding PUMaC 2018...")
+            add_source(url, f"PUMaC 2018")
 
 def add_cmimc_sources():
     urls = []
@@ -78,7 +103,7 @@ def add_aime_sources():
     pass
 
 if __name__ == "__main__":
-    # add_source("https://hmmt-archive.s3.amazonaws.com/tournaments/2024/nov/gen/solutions.pdf", "HMMT November 2024")
-    # add_source("https://hmmt-archive.s3.amazonaws.com/tournaments/2024/nov/thm/solutions.pdf", "HMMT November 2024")
-    for name in add_cmimc_sources():
-        print(name)
+    # add_hmmt_nov_sources()
+    # add_hmmt_feb_sources()
+    # add_pumac_sources()
+    pass
